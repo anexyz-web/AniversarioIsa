@@ -1,0 +1,414 @@
+<html><head><base href><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Festa de Anivers&#xe1;rio - Isa</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    background: url('https://i.ibb.co/W2LB0X9/09f8b2c2-45e8-4eef-aa15-924b69e8ef8c.jpg') no-repeat center center;
+    background-size: cover;
+    transition: background-image 1s ease;
+}
+
+#game-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+#dialogue-box {
+    width: 90%;
+    background: rgba(0, 0, 0, 0.8); 
+    color: white;
+    border: 2px solid white;
+    border-radius: 10px;
+    position: absolute;
+    bottom: 15%;  
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    z-index: 1000;
+}
+
+#choices-container {
+    display: none;
+    width: 90%;
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    gap: 10px;
+    flex-direction: column;
+}
+
+.choice-btn {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border: 2px solid white;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.2s;
+}
+
+.choice-btn:hover {
+    transform: scale(1.02);
+}
+
+#character-name {
+    font-weight: bold;
+    color: #9370DB;
+}
+
+#character-sprite {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 85vh;
+}
+
+#gift-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+#gift-box {
+    width: 200px;
+    height: 200px;
+    background: #888888;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+#gift-box:hover {
+    transform: scale(1.05);
+}
+
+#gift-image {
+    display: none;
+    max-width: 90%;
+    max-height: 90vh;
+    position: relative;
+}
+
+#close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 2001;
+}
+
+.gift-container {
+    position: relative;
+}
+
+.navigation-button {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1001;
+    transition: transform 0.3s ease;
+}
+
+.navigation-button img {
+    width: 60px;
+    height: auto;
+}
+
+.navigation-button:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+.button-tooltip {
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-right: 10px;
+    font-size: 16px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.navigation-button:hover .button-tooltip {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    #dialogue-box, #choices-container {
+        width: 95%;
+        font-size: 1rem;
+        bottom: 15%;  
+        padding: 12px;
+    }
+    
+    #character-sprite {
+        height: 60vh;
+    }
+}
+</style>
+
+<script>document.addEventListener('DOMContentLoaded', function () {
+  const dialogues = [{
+    name: "Isa",
+    text: "*andar*"
+  }, {
+    name: "Isa",
+    text: "vejo Rosalya correndo em minha direção."
+  }, {
+    name: "Rosalya",
+    text: "FINALMENTE! Pensei que tinha se perdido no caminho!",
+    nameColor: "#9ca3d6",
+    sprite: "https://i.ibb.co/jkdS059/Rosalya-Baile4.png"
+  }, {
+    name: "",
+    text: "",
+    showChoices: true,
+    keepSprite: true,
+    choices: [{
+      text: "Desculpa o atraso! O trânsito estava horrível!",
+      response: {
+        name: "Rosalya",
+        text: "O importante é que chegou!",
+        nameColor: "#9ca3d6",
+        sprite: "https://i.ibb.co/VLNBqQK/Rosalya-Baile2.png"
+      }
+    }, {
+      text: "Uau, Rosa! Você se superou na decoração!",
+      response: {
+        name: "Rosalya",
+        text: "Não fiz sozinha! O Leigh e o Alexy ajudaram muito!",
+        nameColor: "#9ca3d6",
+        sprite: "https://i.ibb.co/VLNBqQK/Rosalya-Baile2.png"
+      }
+    }, {
+      text: "Cadê todo mundo?",
+      response: {
+        name: "Rosalya",
+        text: "Espalhados por aí! O lysandre...está bem...sendo o Lysandre. Perdeu o bloco de notas DE NOVO.",
+        nameColor: "#9ca3d6",
+        sprite: "https://i.ibb.co/b6MBXFr/36-Sem-T-tulo-20250108173159.png"
+      }
+    }],
+    lastSprite: "https://i.ibb.co/jkdS059/Rosalya-Baile4.png"
+  }, {
+    name: "Castiel",
+    text: "Ah, então você está aqui.",
+    nameColor: "#ff4d4d",
+    sprite: "https://i.ibb.co/C0mFB9g/1044-9331d33063ea335d-1.png"
+  }, {
+    name: "",
+    text: "",
+    showChoices: true,
+    keepSprite: true,
+    choices: [{
+      text: "Finalmente livre do trabalho de segurança?",
+      response: {
+        name: "Castiel",
+        text: "Por enquanto... mas vale a pena pela vista.",
+        nameColor: "#ff4d4d",
+        sprite: "https://i.ibb.co/Xx4zzFP/1045-26c600f217ed3fa7.png"
+      }
+    }, {
+      text: "Pensei que tinha me esquecido...",
+      response: {
+        name: "Castiel",
+        text: "Impossível te esquecer, mesmo que eu tentasse.",
+        nameColor: "#ff4d4d",
+        sprite: "https://i.ibb.co/Xx4zzFP/1045-26c600f217ed3fa7.png"
+      }
+    }, {
+      text: "É estranho te ver sem a jaqueta de couro.",
+      response: {
+        name: "Castiel",
+        text: "Prestando atenção no que eu visto, é?",
+        nameColor: "#ff4d4d",
+        sprite: "https://i.ibb.co/Xx4zzFP/1045-26c600f217ed3fa7.png"
+      }
+    }],
+    lastSprite: "https://i.ibb.co/C0mFB9g/1044-9331d33063ea335d-1.png"
+  }, {
+    name: "Rosalya",
+    text: "Agora que você e o Castiel terminaram esse momento fofo de vocês... Tenho uma surpresinha especial pra você!",
+    nameColor: "#9ca3d6",
+    sprite: "https://i.ibb.co/jkdS059/Rosalya-Baile4.png"
+  }, {
+    name: "Rosalya",
+    text: "Leigh me ajudou a escolher, então pode ter certeza que é algo único!",
+    nameColor: "#9ca3d6",
+    sprite: "https://i.ibb.co/VLNBqQK/Rosalya-Baile2.png",
+    showGift: true
+  }, {
+    name: "Isa",
+    text: "É lindo! Rosa, você é incrível!",
+    keepSprite: true,
+    sprite: "https://i.ibb.co/VLNBqQK/Rosalya-Baile2.png"
+  }, {
+    name: "Rosalya",
+    text: "Sabia que você ia gostar!",
+    nameColor: "#9ca3d6",
+    sprite: "https://i.ibb.co/VLNBqQK/Rosalya-Baile2.png"
+  }, {
+    name: "Isa",
+    text: "Estou com um pouco de sede, vou pegar uma bebida, quer também?",
+    keepSprite: true,
+    sprite: "https://i.ibb.co/VLNBqQK/Rosalya-Baile2.png"
+  }, {
+    name: "Rosalya",
+    text: "Sim! Traz aquele suco de frutas vermelhas pra mim?",
+    nameColor: "#9ca3d6",
+    sprite: "https://i.ibb.co/LY3YDM2/Rosalya-Baile1.png"
+  }];
+  let currentDialogueIndex = 0;
+  let showingGift = false;
+  const characterNameEl = document.getElementById('character-name');
+  const dialogueEl = document.getElementById('dialogue');
+  const dialogueBoxEl = document.getElementById('dialogue-box');
+  const choicesContainerEl = document.getElementById('choices-container');
+  const characterSpriteEl = document.getElementById('character-sprite');
+  const giftOverlay = document.getElementById('gift-overlay');
+  function updateDialogue(dialogue) {
+    if (!dialogue) return;
+    characterNameEl.textContent = dialogue.name;
+    characterNameEl.style.color = dialogue.nameColor || '#9370DB';
+    dialogueEl.textContent = dialogue.text;
+    if (dialogue.sprite) {
+      characterSpriteEl.src = dialogue.sprite;
+      characterSpriteEl.style.display = 'block';
+    } else if (dialogue.keepSprite && dialogue.lastSprite) {
+      characterSpriteEl.src = dialogue.lastSprite;
+      characterSpriteEl.style.display = 'block';
+    } else if (dialogue.keepSprite && dialogue.sprite) {
+      characterSpriteEl.src = dialogue.sprite;
+      characterSpriteEl.style.display = 'block';
+    } else if (!dialogue.keepSprite) {
+      characterSpriteEl.style.display = 'none';
+    }
+    if (dialogue.showChoices) {
+      showChoices(dialogue.choices);
+    } else {
+      dialogueBoxEl.style.display = 'block';
+      choicesContainerEl.style.display = 'none';
+    }
+    if (dialogue.showGift) {
+      showingGift = true;
+    }
+  }
+  function showChoices(choicesSet) {
+    choicesContainerEl.style.display = 'flex';
+    choicesContainerEl.innerHTML = '';
+    choicesSet.forEach((choice, index) => {
+      const button = document.createElement('button');
+      button.className = 'choice-btn';
+      button.textContent = choice.text;
+      button.onclick = () => handleChoice(choice);
+      choicesContainerEl.appendChild(button);
+    });
+    dialogueBoxEl.style.display = 'none';
+  }
+  function handleChoice(choice) {
+    choicesContainerEl.style.display = 'none';
+    dialogueBoxEl.style.display = 'block';
+    updateDialogue(choice.response);
+  }
+  dialogueBoxEl.addEventListener('click', () => {
+    if (!choicesContainerEl.style.display || choicesContainerEl.style.display === 'none') {
+      if (showingGift) {
+        giftOverlay.style.display = 'flex';
+        showingGift = false;
+        return;
+      }
+      if (currentDialogueIndex < dialogues.length - 1) {
+        currentDialogueIndex++;
+        updateDialogue(dialogues[currentDialogueIndex]);
+      } else {
+        dialogueBoxEl.style.display = 'none';
+        characterSpriteEl.style.display = 'none';
+        choicesContainerEl.style.display = 'none';
+        const navButton = document.createElement('div');
+        navButton.className = 'navigation-button';
+        navButton.innerHTML = `
+                    <img src="https://i.ibb.co/F4HBZzy/1000095556-removebg-preview.png" alt="Navigate">
+                    <span class="button-tooltip">Cozinha</span>
+                `;
+        document.body.appendChild(navButton);
+        navButton.addEventListener('click', () => {
+          document.body.style.backgroundImage = "url('https://i.ibb.co/GTSKKXs/4981faeb-484e-460c-9c17-4697665f9730.jpg')";
+          navButton.remove();
+          setTimeout(() => {
+            window.location.href = "https://niver-isa-seven.vercel.app/";
+          }, 2000);
+        });
+      }
+    }
+  });
+  const giftBox = document.getElementById('gift-box');
+  const giftImage = document.getElementById('gift-image');
+  const closeButton = document.getElementById('close-button');
+  giftBox.addEventListener('click', () => {
+    giftBox.style.display = 'none';
+    giftImage.style.display = 'block';
+  });
+  closeButton.addEventListener('click', () => {
+    giftOverlay.style.display = 'none';
+  });
+  updateDialogue(dialogues[0]);
+});</script>
+</head>
+<body>
+    <div id="game-container">
+        <img id="character-sprite" alt="character">
+        <div id="dialogue-box">
+            <div id="character-name"></div>
+            <div id="dialogue"></div>
+        </div>
+        <div id="choices-container"></div>
+    </div>
+    
+    <div id="gift-overlay">
+        <div class="gift-container">
+            <button id="close-button">&#xd7;</button>
+            <div id="gift-box"></div>
+            <img id="gift-image" src="https://i.ibb.co/hVw08TQ/8179-86a3844eff29af1d.png" alt="Gift">
+        </div>
+    </div>
+</body>
+</html>
